@@ -10,7 +10,8 @@
   "db:migrate:up": "sequelize db:migrate",
   "db:migrate:down": "sequelize db:migrate:undo:all",
   "db:refresh": "npm run db:migrate:down && npm run db:migrate:up",
-  "render-build": "npx sequelize-cli db:migrate"
+  "render-build": "npm install sequelize-cli && npm run db:migrate:up"
+
 },
   "keywords": [],
   "author": "",
