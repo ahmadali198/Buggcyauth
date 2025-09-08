@@ -13,13 +13,15 @@ require("./services/google.js");             // Passport Google strategy
 const app = express();
 
 // ✅ Dynamic allowed origins
+// ✅ Dynamic allowed origins with safe fallback
 const allowedOrigins = [
-  process.env.CLIENT_URL,     // frontend from env
-  "http://localhost:3000"     // always allow local
+  process.env.CLIENT_URL || "", // empty string if not yet set
+  "http://localhost:3000",     // always allow local for dev
 ];
 
 app.use(cors({
   origin: (origin, callback) => {
+    // allow requests with no origin (Postman, curl)
     if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true);
     } else {
@@ -30,6 +32,8 @@ app.use(cors({
   credentials: true,
 }));
 
+
+
 // Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -37,6 +41,15 @@ app.use(logger("dev"));
 
 // Routes
 app.use("/api", routes);
+
+
+app.get("/", (req, res) => {
+  res.json({ success: true, message: "🚀 Backend is working!" });
+});
+app.use((req, res, next) => {
+  console.log(`➡️ ${req.method} ${req.url} from origin: ${req.headers.origin || "no origin"}`);
+  next();
+});
 
 // Start server
 const port = process.env.PORT || 2000;
