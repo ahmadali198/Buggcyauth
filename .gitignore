@@ -1,0 +1,40 @@
+# Node modules
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Environment files (do not commit secrets!)
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# Build output
+/build
+/dist
+
+# Logs
+logs
+*.log
+*.log.*
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Coverage
+coverage/
+*.lcov
+
+# Sequelize specific
+.sequelize-temp/
+
+# IDE
+.vscode/
+.idea/
