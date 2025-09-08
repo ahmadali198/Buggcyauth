@@ -1,10 +1,9 @@
 // services/google.js
-import passport from "passport";
-import { config } from "dotenv";
-import { User } from "../db/models/index.js";
+const passport = require("passport");
+require("dotenv").config();
 
+const { User } = require("../db/models/index.js"); // CommonJS import
 const GoogleTokenStrategy = require("passport-google-token").Strategy;
-config();
 
 passport.use(
   new GoogleTokenStrategy(
@@ -17,7 +16,6 @@ passport.use(
         const email = profile.emails?.[0]?.value?.toLowerCase();
         if (!email) return done(new Error("Google account has no email"), null);
 
-        // 🔍 Find or create user
         let user = await User.findByEmail(email);
 
         if (!user) {
@@ -34,7 +32,7 @@ passport.use(
           await user.update({ googleId: profile.id, provider: "google" });
         }
 
-        return done(null, user); // Pass user to controller
+        return done(null, user);
       } catch (error) {
         console.error("Passport error:", error);
         return done(error, null);
@@ -43,4 +41,4 @@ passport.use(
   )
 );
 
-export default passport;
+module.exports = passport;

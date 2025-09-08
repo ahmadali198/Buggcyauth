@@ -1,11 +1,13 @@
-import express from "express";
-import passport from "passport";
-import jwt from "jsonwebtoken";
+// ---------------- IMPORTS ----------------
+const express = require("express");
+const passport = require("passport");
+const jwt = require("jsonwebtoken");
 
-import AuthController from "../controllers/AuthController.js";
-import upload from "../middleware/upload.js"; // 👈 ab ye Cloudinary-based upload hai
-import authMiddleware from "../middleware/authMiddleware.js";
+const AuthController = require("../controllers/AuthController.js");
+const upload = require("../middleware/upload.js"); // Cloudinary-based upload
+const authMiddleware = require("../middleware/authMiddleware.js");
 
+// ---------------- ROUTER ----------------
 const router = express.Router();
 
 // ======================
@@ -89,4 +91,5 @@ router.get("/test-protected", authMiddleware, (req, res) => {
   res.json({ success: true, message: "You accessed a protected route ✅", user: req.user });
 });
 
-export default router;
+// ---------------- EXPORT ----------------
+module.exports = router;

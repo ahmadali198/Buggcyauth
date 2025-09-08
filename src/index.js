@@ -1,20 +1,21 @@
-import dotenv from "dotenv";
-dotenv.config();
+// src/index.js
+require("dotenv").config();
 
-import cors from "cors";
-import logger from "morgan";
-import express from "express";
-import bodyParser from "body-parser";
+const express = require("express");
+const cors = require("cors");
+const logger = require("morgan");
+const bodyParser = require("body-parser");
 
-import routes from "./routes/index.js";
-import "./services/google.js";
+// Routes & services
+const routes = require("./routes/index.js"); // CommonJS routes
+require("./services/google.js");             // Passport Google strategy
 
 const app = express();
 
 // ✅ Dynamic allowed origins
 const allowedOrigins = [
-  process.env.CLIENT_URL,     // frontend from env (localhost in dev, vercel in prod)
-  "http://localhost:3000"     // always allow local for safety
+  process.env.CLIENT_URL,     // frontend from env
+  "http://localhost:3000"     // always allow local
 ];
 
 app.use(cors({
@@ -43,3 +44,4 @@ app.listen(port, () => {
   console.log(`🚀 Server running on ${process.env.BASE_URL || `http://localhost:${port}`}`);
   console.log(`✅ Allowed Frontend: ${process.env.CLIENT_URL}`);
 });
+module.exports = app; // for testing

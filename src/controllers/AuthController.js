@@ -1,11 +1,14 @@
-import jwt from "jsonwebtoken";
-import { User } from "../db/models/index.js";
-import fs from "fs";
-import { uploadToCloudinary } from "../utils/cloudinary.js";
+// ---------------- IMPORTS ----------------
+const { User } = require("../db/models/index.js"); // CommonJS style for models
+const jwt = require("jsonwebtoken");               // CommonJS style
+const fs = require("fs");
+const { uploadToCloudinary } = require("../utils/cloudinary.js");
 
+// ---------------- JWT SIGN ----------------
 const signToken = (user) =>
   jwt.sign({ id: user.id }, process.env.JWT_SECRET, { expiresIn: "7d" });
 
+// ---------------- AUTH CONTROLLER ----------------
 const AuthController = {
   // ---------------- SIGNUP ----------------
   async signup(req, res) {
@@ -20,23 +23,22 @@ const AuthController = {
         return res.status(409).send({ error: "Email already registered" });
       }
 
-      // 🌩️ Upload to Cloudinary if file present
-    let profilePicture = null;
-    if (req.file) {
-      try {
-        const result = await uploadToCloudinary(req.file);
-        profilePicture = result.secure_url; // ✅ hosted image URL
-      } catch (cloudErr) {
-        console.error("❌ Cloudinary upload error:", cloudErr);
-        return res.status(500).send({ error: "Image upload failed" });
+      // Upload to Cloudinary if file present
+      let profilePicture = null;
+      if (req.file) {
+        try {
+          const result = await uploadToCloudinary(req.file);
+          profilePicture = result.secure_url;
+        } catch (cloudErr) {
+          console.error("❌ Cloudinary upload error:", cloudErr);
+          return res.status(500).send({ error: "Image upload failed" });
+        }
       }
-    }
-
 
       const user = await User.create({
         name: name?.trim() || email.split("@")[0],
         email: email.trim().toLowerCase(),
-        password, // raw password
+        password,
         provider: "local",
         profilePicture,
         age: age || null,
@@ -57,28 +59,26 @@ const AuthController = {
   },
 
   // ---------------- LOGIN ----------------
-// ---------------- LOGIN ----------------
-async login(req, res) {
-  try {
-    const { email, password } = req.body;
-    if (!email || !password) {
-      return res.status(400).send({ error: "Email and password required" });
+  async login(req, res) {
+    try {
+      const { email, password } = req.body;
+      if (!email || !password) {
+        return res.status(400).send({ error: "Email and password required" });
+      }
+
+      const user = await User.findByEmail(email);
+
+      if (!user || (user.provider === "local" && password !== user.password)) {
+        return res.status(401).send({ error: "Invalid email or password" });
+      }
+
+      const token = signToken(user);
+      return res.status(200).send({ token, user: user.toJSON() });
+    } catch (err) {
+      console.error("Login error:", err);
+      return res.status(500).send({ error: "Login failed" });
     }
-
-    const user = await User.findByEmail(email);
-
-    // Combined check for invalid email or password
-    if (!user || (user.provider === "local" && password !== user.password)) {
-      return res.status(401).send({ error: "Invalid email or password" });
-    }
-
-    const token = signToken(user);
-    return res.status(200).send({ token, user: user.toJSON() });
-  } catch (err) {
-    console.error("Login error:", err);
-    return res.status(500).send({ error: "Login failed" });
-  }
-},
+  },
 
   // ---------------- GOOGLE LOGIN ----------------
   async googleLogin(req, res) {
@@ -97,7 +97,6 @@ async login(req, res) {
       let user = await User.findByEmail(email);
 
       if (!user) {
-        // Create Google user without password
         user = await User.create({
           name: displayName || email.split("@")[0],
           email,
@@ -108,7 +107,6 @@ async login(req, res) {
           emailVerified: true,
         });
       } else if (!user.googleId) {
-        // Link Google account if local user exists
         await user.update({ googleId, provider: "google" });
       }
 
@@ -121,4 +119,5 @@ async login(req, res) {
   },
 };
 
-export default AuthController;
+// ---------------- EXPORT ----------------
+module.exports = AuthController;

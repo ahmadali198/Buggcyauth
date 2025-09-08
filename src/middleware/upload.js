@@ -1,4 +1,5 @@
-import multer from "multer";
+// src/middleware/upload.js
+const multer = require("multer");
 
 // Memory storage (no disk)
 const storage = multer.memoryStorage();
@@ -12,10 +13,11 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
+// Multer instance
 const upload = multer({
   storage,
   fileFilter,
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
 });
 
-export default upload;
+module.exports = upload; // ✅ CommonJS export
