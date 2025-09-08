@@ -7,7 +7,7 @@
     "dev": "nodemon --exec npx babel-node src/index.js",
     "clean": "npx rimraf ./build && npx mkdirp ./build",
     "prebuild": "npm run clean",
-   "build": "npx babel src -d ./build --ignore ./node_modules",
+    "build": "npx babel src -d ./build --ignore ./node_modules",
     "db:setup": "sequelize db:create",
     "db:migrate:up": "sequelize db:migrate",
     "db:migrate:down": "sequelize db:migrate:undo:all",
@@ -19,16 +19,14 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@babel/cli": "^7.12.13",
-    "@babel/core": "^7.12.13",
+    "@babel/cli": "^7.28.3",
+    "@babel/core": "^7.28.4",
     "@babel/node": "^7.12.13",
-    "@babel/plugin-proposal-optional-chaining": "^7.12.13",
-    "@babel/plugin-transform-runtime": "^7.12.13",
-    "@babel/preset-env": "^7.12.13",
+    "@babel/plugin-transform-runtime": "^7.28.3",
+    "@babel/plugin-transform-optional-chaining": "^7.27.1",
+    "@babel/preset-env": "^7.28.3",
     "@babel/register": "^7.12.13",
     "@babel/runtime": "^7.12.13",
-    "babel-eslint": "^10.1.0",
-    "babel-node": "0.0.1-security",
     "bcrypt": "^6.0.0",
     "body-parser": "^1.19.0",
     "cloudinary": "^1.41.3",
@@ -44,14 +42,11 @@
     "passport": "^0.4.1",
     "passport-google-token": "^0.1.2",
     "pg": "^8.5.1",
-    "sequelize": "^6.5.0",
     "rimraf": "^6.0.1",
+    "sequelize": "^6.5.0",
     "sequelize-cli": "^6.2.0"
   },
   "engines": {
-  "node": ">=18.0.0"
-},
-  "devDependencies": {
-    
+    "node": ">=18.0.0"
   }
 }
